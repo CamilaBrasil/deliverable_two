@@ -1,20 +1,18 @@
-import java.util.Calendar;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class PreWork_Lab1part2Main {
 
 	public static void main(String[] args) {
 
-		int millisDay = 86400000;
 		int year;
 		int month;
 		int day;
-		Calendar calendar = Calendar.getInstance();
-		long epoch1;
-		long epoch2;
-		long differenceInDays;
-		long yearsDiff;
-		long daysDiff;
+		LocalDate date1;
+		LocalDate date2;
+		Period period;
 
 		Scanner scnr = new Scanner(System.in);
 
@@ -41,16 +39,8 @@ public class PreWork_Lab1part2Main {
 			day = scnr.nextInt();
 		}
 
-		/*
-		 * The Calendar class recognizes 0 being January and 1 being February, so is
-		 * necessary to subtract one from the users input to get the right month
-		 */
-		month = month - 1;
-
-		// Putting the input in a calendar setting.
-		calendar.set(year, month, day);
-		// Transforming the calendar value to epoch time.
-		epoch1 = calendar.getTimeInMillis();
+		// Creating a LocalDate variable from the input.
+		date1 = LocalDate.of(year, month, day);
 
 		// Asking the user to input the second date and rewriting the date1 with it.
 		System.out.println("Please type the year for the second date.");
@@ -61,50 +51,40 @@ public class PreWork_Lab1part2Main {
 
 		// Loop used to confirm that is a valid month.
 		while (month < 1 || month > 12) {
-			System.out.println("This is not a valid month, please type");
+			System.out.println("This is not a valid month, please enter another month");
 			month = scnr.nextInt();
 		}
 
 		System.out.println("Please type the day for the second date.");
 		day = scnr.nextInt();
 
-		// In case the amount of days is not valid for the month entered, asks for
+		// In case the day entered is not valid for the month entered, asks for
 		// another day.
 		while (!validateDay(year, month, day)) {
 			System.out.println("This is not a valid day for this month, please enter another day");
 			day = scnr.nextInt();
 		}
 
-		/*
-		 * The Calendar class recognizes 0 being January and 1 being February, so is
-		 * necessary to subtract one from the users input to get the right month
-		 */
-		month = month - 1;
-
-		// Putting the input in a calendar setting.
-		calendar.set(year, month, day);
-		// Transforming the calendar value to epoch time.
-		epoch2 = calendar.getTimeInMillis();
+		// Creating a LocalDate variable from the input.
+		date2 = LocalDate.of(year, month, day);
 
 		/*
-		 * Subtracting the two epoch times and dividing by the amount of milliseconds
-		 * per day, to get the amount of days. Taking the absolute value of it in case
-		 * that the second date input is bigger then the first.
+		 * Checking which date is smaller then the other and getting the difference
+		 * between the two dates in the right order.
 		 */
-		differenceInDays = Math.abs((epoch1 - epoch2) / millisDay);
+		if (date2.isBefore(date1)) {
+			period = Period.between(date2, date1);
+		} else {
+			period = Period.between(date1, date2);
+		}
 
-		// With the remainder of this modulus, we will have the amount of days that are
-		// less then a year.
-		daysDiff = differenceInDays % 365;
+		// Extracting the values from the period variable and transforming in readable
+		// information.
+		System.out.println("There are " + period.get(ChronoUnit.YEARS) + " years, " + period.get(ChronoUnit.MONTHS)
+				+ " months and " + period.get(ChronoUnit.DAYS) + " days between these dates.");
 
-		// Subtracting the amount of days, to get the number that will divide evenly by
-		// 365.
-		differenceInDays = differenceInDays - daysDiff;
+		scnr.close();
 
-		// Dividing the mount of days left, and getting a round amount of years.
-		yearsDiff = differenceInDays / 365;
-
-		System.out.println(yearsDiff + " years and " + daysDiff + " days.");
 	}
 
 	// Method that it will test if days input are valid, based on leap years and
